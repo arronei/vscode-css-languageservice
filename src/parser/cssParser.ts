@@ -2032,7 +2032,22 @@ export class Parser {
 			this._parseNumeric() ||
 			this._parseHexColor() ||
 			this._parseOperation() ||
-			this._parseNamedLine();
+			this._parseNamedLine() ||
+			this._parseAngleBracketDataType();
+	}
+
+	public _parseAngleBracketDataType(): nodes.Node | null {
+		if (!this.peekDelim('<')) {
+			return null;
+		}
+		const pos = this.mark();
+		const node = this.create(nodes.Node);
+		this.consumeToken(); // '<'
+		if (!this.accept(TokenType.Ident) || !this.acceptDelim('>')) {
+			this.restoreAtMark(pos);
+			return null;
+		}
+		return this.finish(node);
 	}
 
 	public _parseOperation(): nodes.Node | null {

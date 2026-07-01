@@ -279,7 +279,7 @@ suite('CSS - Parser', () => {
 		assertNode('not all and (monochrome)', parser, parser._parseMediaQueryList.bind(parser));
 	});
 
-	
+
 	test('@scope', function () {
 		const parser = new Parser();
 		assertNode('@scope { }', parser, parser._parseScope.bind(parser))
@@ -302,13 +302,13 @@ suite('CSS - Parser', () => {
 		assertError('@scope (.foo) to (.bar { }', parser, parser._parseScope.bind(parser), ParseError.RightParenthesisExpected)
 
 		assertError('@scope (.foo) to { }', parser, parser._parseScope.bind(parser), ParseError.LeftParenthesisExpected)
-		
+
 		assertError('@scope ', parser, parser._parseScope.bind(parser), ParseError.LeftCurlyExpected)
 		assertError('@scope .foo { }', parser, parser._parseScope.bind(parser), ParseError.LeftCurlyExpected)
 		assertError('@scope (.foo)', parser, parser._parseScope.bind(parser), ParseError.LeftCurlyExpected)
 		assertError('@scope to (.bar)', parser, parser._parseScope.bind(parser), ParseError.LeftCurlyExpected)
 		assertError('@scope (.foo) to (.bar)', parser, parser._parseScope.bind(parser), ParseError.LeftCurlyExpected)
-		
+
 		assertError('@scope {', parser, parser._parseScope.bind(parser), ParseError.RightCurlyExpected)
 		assertError('@scope (.foo) {', parser, parser._parseScope.bind(parser), ParseError.RightCurlyExpected)
 		assertError('@scope to (.bar) {', parser, parser._parseScope.bind(parser), ParseError.RightCurlyExpected)
@@ -574,6 +574,15 @@ suite('CSS - Parser', () => {
 		assertNode(`grid-template: 'left1 footer footer' 1fr [end] / [ini] 1fr [info-start] 2fr 1fr [end]`, parser, parser._parseDeclaration.bind(parser));
 		assertNode(`content: "("counter(foo) ")"`, parser, parser._parseDeclaration.bind(parser));
 		assertNode(`content: 'Hello\\0A''world'`, parser, parser._parseDeclaration.bind(parser));
+	});
+
+	test('attr() type() syntax component', function () {
+		const parser = new Parser();
+		assertNode('anchor-name: attr(id type(<custom-ident>))', parser, parser._parseDeclaration.bind(parser));
+		assertNode('width: attr(data-w type(<length>), 10px)', parser, parser._parseDeclaration.bind(parser));
+		assertNode('<custom-ident>', parser, parser._parseTerm.bind(parser));
+		assertNode('<length>', parser, parser._parseTerm.bind(parser));
+		assertError('attr(id type(<)', parser, parser._parseFunction.bind(parser), ParseError.RightParenthesisExpected);
 	});
 
 	test('term', function () {
